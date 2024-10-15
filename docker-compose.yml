@@ -1,0 +1,67 @@
+networks:
+  nx-microray-network:
+    driver: bridge
+
+volumes:
+  nx-microray-mongodb-data:
+
+services:
+  # nx-microray-nginx:
+  #   image: nginx:latest
+  #   container_name: nx-microray-nginx
+  #   ports:
+  #     - "80:80" # Adjusting to 80 for direct access without specifying port
+  #     - "443:443" # enable HTTPS connection
+  #   depends_on:
+  #     - nx-microray-api
+  #     - nx-microray-mongodb
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #     - ./cert/:/etc/nginx/cert/
+  #   networks:
+  #     - nx-microray-network
+
+  nx-microray-mongodb:
+    image: mongo
+    container_name: nx-microray-mongodb
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    volumes:
+      - nx-microray-mongodb-data:/data/db
+    networks:
+      - nx-microray-network
+
+  nx-microray-mongoexpress:
+    image: mongo-express
+    container_name: nx-microray-mongoexpress
+    ports:
+      - "8088:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: nx-microray-mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+    depends_on:
+      nx-microray-mongodb:
+        condition: service_healthy
+    networks:
+      - nx-microray-network
+
+  # nx-microray-api:
+  #   image: cdray527/nx-microray-api:latest
+  #   build:
+  #     context: ../nx-microray-api
+  #     dockerfile: Dockerfile
+  #   container_name: nx-microray-api
+  #   depends_on:
+  #     - nx-microray-mongodb
+  #   environment:
+  #     MONGO_URI: mongodb://root:example@mongo:27017/sneakerDB?authSource=admin
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - nx-microray-network
