@@ -51,17 +51,38 @@ services:
     networks:
       - nx-microray-network
 
-  # nx-microray-api:
-  #   image: cdray527/nx-microray-api:latest
-  #   build:
-  #     context: ../nx-microray-api
-  #     dockerfile: Dockerfile
-  #   container_name: nx-microray-api
-  #   depends_on:
-  #     - nx-microray-mongodb
-  #   environment:
-  #     MONGO_URI: mongodb://root:example@mongo:27017/sneakerDB?authSource=admin
-  #   ports:
-  #     - "8080:8080"
-  #   networks:
-  #     - nx-microray-network
+  nx-microray-app:
+    image: cdray527/nx-microray-app:latest
+    container_name: nx-microray-app
+    build:
+      context: ../nx-microray-app/
+      dockerfile: Dockerfile
+    volumes:
+      - ../nx-microray-app:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/.next
+    ports:
+      - "4000:4000"
+      - "4100:4100"
+      - "4200:4200"
+      - "4300:4300"
+      - "6006:6006"
+    networks:
+      - nx-microray-network
+
+  nx-microray-api:
+    image: cdray527/nx-microray-api:latest
+    build:
+      context: ../nx-microray-api
+      dockerfile: Dockerfile
+    container_name: nx-microray-api
+    depends_on:
+      - nx-microray-mongodb
+    environment:
+      MONGO_URI: "mongodb://nx-microray-mongodb:27017"
+    volumes:
+      - ../nx-microray-api:/usr/src/api
+    ports:
+      - "8080:8080"
+    networks:
+      - nx-microray-network

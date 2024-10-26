@@ -1,0 +1,58 @@
+networks:
+  nx-microray-network:
+    driver: bridge
+
+volumes:
+  nx-microray-mongodb-data:
+
+services:
+  nx-microray-mongodb:
+    image: mongo
+    container_name: nx-microray-mongodb
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    volumes:
+      - nx-microray-mongodb-data:/data/db
+    networks:
+      - nx-microray-network
+
+  nx-microray-app-prod:
+    image: cdray527/nx-microray-app-prod
+    container_name: nx-microray-app-prod
+    build:
+      context: ../nx-microray-app/
+      dockerfile: Dockerfile.prod
+    volumes:
+      - ../nx-microray-app:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/.next
+    command: "npx nx run-many --target=serve --configuration=production --all"
+    # command: "tail -F anything"
+    ports:
+      - 4000:4000
+      - 4100:4100
+      - 4200:4200
+      - 4300:4300
+    networks:
+      - nx-microray-network
+
+  nx-microray-api:
+    image: cdray527/nx-microray-api:latest
+    build:
+      context: ../nx-microray-api
+      dockerfile: Dockerfile
+    container_name: nx-microray-api
+    depends_on:
+      - nx-microray-mongodb
+    environment:
+      MONGO_URI: mongodb://root:example@mongo:27017/nx-microray?authSource=admin
+    ports:
+      - "8080:8080"
+    networks:
+      - nx-microray-network
