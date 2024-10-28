@@ -46,12 +46,14 @@ services:
     image: cdray527/nx-microray-api:latest
     build:
       context: ../nx-microray-api
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     container_name: nx-microray-api
     depends_on:
       - nx-microray-mongodb
     environment:
-      MONGO_URI: mongodb://root:example@mongo:27017/nx-microray?authSource=admin
+      MONGO_URI: "mongodb://nx-microray-mongodb:27017"
+    volumes:
+      - ../nx-microray-api:/usr/src/api
     ports:
       - "8080:8080"
     networks:
