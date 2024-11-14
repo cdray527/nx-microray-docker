@@ -4,6 +4,7 @@ networks:
 
 volumes:
   nx-microray-mongodb-data:
+    driver: local
 
 services:
   # nx-microray-nginx:
@@ -22,8 +23,11 @@ services:
   #     - nx-microray-network
 
   nx-microray-mongodb:
-    image: mongo
+    image: cdray527/nx-microray-mongodb:latest
     container_name: nx-microray-mongodb
+    build:
+      context: ./mongo/
+      dockerfile: Dockerfile.mongo
     ports:
       - "27017:27017"
     healthcheck:

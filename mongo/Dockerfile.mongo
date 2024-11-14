@@ -1,0 +1,5 @@
+# Start with the MongoDB base image
+FROM mongo:latest
+
+# Copy the initialization script and JSON data to the MongoDB entrypoint directory
+COPY docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
