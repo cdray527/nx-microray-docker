@@ -7,20 +7,21 @@ volumes:
     driver: local
 
 services:
-  # nx-microray-nginx:
-  #   image: nginx:latest
-  #   container_name: nx-microray-nginx
-  #   ports:
-  #     - "80:80" # Adjusting to 80 for direct access without specifying port
-  #     - "443:443" # enable HTTPS connection
-  #   depends_on:
-  #     - nx-microray-api
-  #     - nx-microray-mongodb
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf
-  #     - ./cert/:/etc/nginx/cert/
-  #   networks:
-  #     - nx-microray-network
+  nx-microray-nginx:
+    image: nginx:latest
+    container_name: nx-microray-nginx
+    ports:
+      - "80:80"
+      # - "443:443" # enable HTTPS connection
+    depends_on:
+      - nx-microray-app
+      - nx-microray-api-product
+      - nx-microray-mongodb
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      # - ./cert/:/etc/nginx/cert/
+    networks:
+      - nx-microray-network
 
   nx-microray-mongodb:
     image: cdray527/nx-microray-mongodb:latest
@@ -56,7 +57,7 @@ services:
       - nx-microray-network
 
   nx-microray-app:
-    image: cdray527/nx-microray-app:latest
+    image: cdray527/nx-microray-app:dev
     container_name: nx-microray-app
     build:
       context: ../nx-microray-app/
@@ -73,19 +74,20 @@ services:
     networks:
       - nx-microray-network
 
-  nx-microray-api:
-    image: cdray527/nx-microray-api:latest
+  nx-microray-api-product:
+    image: cdray527/nx-microray-api-product:latest
     build:
-      context: ../nx-microray-api
+      context: ../nx-microray-api/product
       dockerfile: Dockerfile
-    container_name: nx-microray-api
+    container_name: nx-microray-api-product
     depends_on:
       - nx-microray-mongodb
     environment:
       MONGO_URI: "mongodb://nx-microray-mongodb:27017"
     volumes:
-      - ../nx-microray-api:/usr/src/api
+      - ../nx-microray-api/product:/usr/src/api
+    command: ["go", "run", "product.go"]
     ports:
-      - "8080:8080"
+      - "8200:8200"
     networks:
       - nx-microray-network
