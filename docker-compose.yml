@@ -66,6 +66,7 @@ services:
       - ../nx-microray-app:/usr/src/app
       - /usr/src/app/node_modules
       - /usr/src/app/.next
+    command: ["nx", "run-many", "--target=serve", "--all"]
     ports:
       - "4000:4000"
       - "4100:4100"
@@ -75,7 +76,7 @@ services:
       - nx-microray-network
 
   nx-microray-api-product:
-    image: cdray527/nx-microray-api-product:latest
+    image: cdray527/nx-microray-api-product:dev
     build:
       context: ../nx-microray-api/product
       dockerfile: Dockerfile

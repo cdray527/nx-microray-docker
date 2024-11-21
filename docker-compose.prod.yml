@@ -46,6 +46,7 @@ services:
       context: ../nx-microray-app/
       dockerfile: Dockerfile.prod
     environment:
+      - NODE_ENVIRONMENT=production
       - NEXT_PUBLIC_HOST_URL=http://nx-microray.com
       - NEXT_PUBLIC_STORE_URL=http://nx-microray-app-store:4100/
       - NEXT_PUBLIC_PRODUCT_URL=http://nx-microray-app-product:4200/
