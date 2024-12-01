@@ -14,7 +14,7 @@ services:
       - "80:80"
       # - "443:443" # enable HTTPS connection
     depends_on:
-      # - nx-microray-api-product
+      - nx-microray-api-product
       - nx-microray-mongodb
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
@@ -33,6 +33,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
+    command: mongod --quiet
     volumes:
       - nx-microray-mongodb-data:/data/db
     networks:
@@ -45,12 +46,6 @@ services:
     build:
       context: ../nx-microray-app/
       dockerfile: Dockerfile.prod
-    environment:
-      - NODE_ENVIRONMENT=production
-      - NEXT_PUBLIC_HOST_URL=http://nx-microray.com
-      - NEXT_PUBLIC_STORE_URL=http://nx-microray-app-store:4100/
-      - NEXT_PUBLIC_PRODUCT_URL=http://nx-microray-app-product:4200/
-      - NEXT_PUBLIC_CHECKOUT_URL=http://nx-microray-app-checkout:4300/
     ports:
       - 4000:4000
     networks:
@@ -89,21 +84,22 @@ services:
     networks:
       - nx-microray-network
 
-  # nx-microray-api-product:
-  #   image: cdray527/nx-microray-api-product:latest
-  #   build:
-  #     context: ../nx-microray-api/product
-  #     dockerfile: Dockerfile.prod
-  #   container_name: nx-microray-api-product
-  #   depends_on:
-  #     - nx-microray-mongodb
-  #   environment:
-  #     MONGO_URI: "mongodb://nx-microray-mongodb:27017"
-  #   volumes:
-  #     - ../nx-microray-api/product:/usr/src/api
-  #   # command: ["./product"]
-  #   command: ["go", "run", "product.go"]
-  #   ports:
-  #     - "8200:8200"
-  #   networks:
-  #     - nx-microray-network
+  nx-microray-api-product:
+    image: cdray527/nx-microray-api-product:latest
+    build:
+      context: ../nx-microray-api/product
+      dockerfile: Dockerfile.prod
+    container_name: nx-microray-api-product
+    depends_on:
+      - nx-microray-mongodb
+    environment:
+      MONGO_URI: "mongodb://nx-microray-mongodb:27017"
+    volumes:
+      - ../nx-microray-api/product:/usr/src/api
+    # command: "sleep 5000"
+    command: ["./product"]
+    # command: ["go", "run", "product.go"]
+    ports:
+      - "5200:5200"
+    networks:
+      - nx-microray-network

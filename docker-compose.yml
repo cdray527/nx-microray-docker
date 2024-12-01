@@ -89,6 +89,6 @@ services:
       - ../nx-microray-api/product:/usr/src/api
     command: ["go", "run", "product.go"]
     ports:
-      - "8200:8200"
+      - "5200:5200"
     networks:
       - nx-microray-network
