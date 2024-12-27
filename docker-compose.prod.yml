@@ -85,7 +85,7 @@ services:
       - nx-microray-network
 
   nx-microray-api-product:
-    image: cdray527/nx-microray-api-product:latest
+    image: cdray527/nx-microray-api-product:prod
     build:
       context: ../nx-microray-api/product
       dockerfile: Dockerfile.prod
@@ -94,6 +94,7 @@ services:
       - nx-microray-mongodb
     environment:
       MONGO_URI: "mongodb://nx-microray-mongodb:27017"
+      PORT: "5200"
     volumes:
       - ../nx-microray-api/product:/usr/src/api
     # command: "sleep 5000"
