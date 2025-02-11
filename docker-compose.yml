@@ -5,6 +5,10 @@ networks:
 volumes:
   nx-microray-mongodb-data:
     driver: local
+  nx-microray-app-node-modules:
+    driver: local
+  nx-microray-app-next-cache:
+    driver: local
 
 services:
   nx-microray-mongodb:
@@ -48,8 +52,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../nx-microray-app:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/.next
+      - nx-microray-app-node-modules:/usr/src/app/node_modules
+      - nx-microray-app-next-cache:/usr/src/app/.next
     command: ["nx", "run", "host:serve:development"]
     ports:
       - "4000:4000"
@@ -64,8 +68,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../nx-microray-app:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/.next
+      - nx-microray-app-node-modules:/usr/src/app/node_modules
+      - nx-microray-app-next-cache:/usr/src/app/.next
     command: ["nx", "run", "store:serve:development"]
     depends_on:
       - nx-microray-app-host
@@ -82,8 +86,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../nx-microray-app:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/.next
+      - nx-microray-app-node-modules:/usr/src/app/node_modules
+      - nx-microray-app-next-cache:/usr/src/app/.next
     command: ["nx", "run", "product:serve:development"]
     depends_on:
       - nx-microray-app-host
@@ -100,8 +104,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../nx-microray-app:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/.next
+      - nx-microray-app-node-modules:/usr/src/app/node_modules
+      - nx-microray-app-next-cache:/usr/src/app/.next
     command: ["nx", "run", "checkout:serve:development"]
     depends_on:
       - nx-microray-app-host
@@ -116,8 +120,8 @@ services:
     command: ["nx", "storybook", "design-system"]
     volumes:
       - ../nx-microray-app:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/.next
+      - nx-microray-app-node-modules:/usr/src/app/node_modules
+      - nx-microray-app-next-cache:/usr/src/app/.next
     depends_on:
       - nx-microray-app-host
     ports:
